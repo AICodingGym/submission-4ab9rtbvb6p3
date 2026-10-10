@@ -1915,6 +1915,15 @@ def test_dot_align_coords(use_dask) -> None:
         xr.testing.assert_allclose(expected, actual)
 
 
+def test_where_preserves_attrs() -> None:
+    da = xr.DataArray(1)
+    da.attrs["foo"] = "bar"
+
+    actual = xr.where(da == 0, -1, da)
+
+    assert_identical(actual.attrs, da.attrs)
+
+
 def test_where() -> None:
     cond = xr.DataArray([True, False], dims="x")
     actual = xr.where(cond, 1, 0)

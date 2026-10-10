@@ -1808,15 +1808,19 @@ def where(cond, x, y):
     Dataset.where, DataArray.where :
         equivalent methods
     """
-    # alignment for three arguments is complicated, so don't support it yet
+    # alignment for three arguments is complicated, so don't support it yet.
+    # Reorder the arguments so that the metadata-bearing x/y object is considered
+    # first when xarray merges attrs, while still evaluating `where` as
+    # `duck_array_ops.where(cond, x, y)`.
     return apply_ufunc(
-        duck_array_ops.where,
-        cond,
+        lambda x, y, cond: duck_array_ops.where(cond, x, y),
         x,
         y,
+        cond,
         join="exact",
         dataset_join="exact",
         dask="allowed",
+        keep_attrs=True,
     )
 
 
